@@ -1,8 +1,8 @@
 #ifndef _SERVER_H_
 #define _SERVER_H
 
-#include "card.h"
-#include "terminal.h"
+#include "../Payment Application/card.h"
+#include "../Payment Application/terminal.h"
 
 typedef unsigned int uint32_t;
 
@@ -47,8 +47,11 @@ void listSavedTransactions(void);
 void printTransState(EN_transState_t state);
 void printServerError(EN_serverError_t error);
 
+void recieveTransactionDataTest(void);
 void isValidAccountTest(void);
 void isBlockedAccountTest(void);
 void isAmountAvailableTest(void);
+void saveTransactionTest(void);
 
 #endif // !_SERVER_H_
+

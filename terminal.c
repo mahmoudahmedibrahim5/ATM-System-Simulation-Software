@@ -5,23 +5,38 @@
 int main()
 {
 	getTransactionDateTest();
-	isCardExpriedTest();
-	getTransactionAmountTest();
-	setMaxAmountTest();
-	isBelowMaxAmountTest();
-	isValidCardPANTest();
+	//isCardExpriedTest();
+	//getTransactionAmountTest();
+	//setMaxAmountTest();
+	//isBelowMaxAmountTest();
+	//isValidCardPANTest();
 	return 0;
 }
 */
+
 EN_terminalError_t getTransactionDate(ST_terminalData_t* termData)
 {
+	EN_terminalError_t error = TERMINAL_OK;
 	printf("Enter Transaction Date : ");
-	gets(termData->transactionDate);//03/11/2024
+	gets(termData->transactionDate);
 	uint8_t TransactionMonth = ((termData->transactionDate[4]) - 48) + ((termData->transactionDate[3]) - 48) * 10;
-	if ((strlen(termData->transactionDate) == 10) && ((termData->transactionDate) != NULL) && TransactionMonth <= 12 && termData->transactionDate[2] == '/' && termData->transactionDate[5] == '/')
-		return TERMINAL_OK;
+	if ((strlen(termData->transactionDate) == 10) && ((termData->transactionDate) != NULL) && TransactionMonth <= 12)
+	{
+		/* Check the format of the input */
+		if (termData->transactionDate[0] < '0' || termData->transactionDate[0] > '3') error = WRONG_DATE; // Day can't be 40 or greater
+		if (termData->transactionDate[1] < '0' || termData->transactionDate[1] > '9') error = WRONG_DATE;
+		if (termData->transactionDate[2] != '/') error = WRONG_DATE;
+		if (termData->transactionDate[3] < '0' || termData->transactionDate[3] > '1') error = WRONG_DATE; // Month can't be 20 or grater
+		if (termData->transactionDate[4] < '0' || termData->transactionDate[4] > '9') error = WRONG_DATE;
+		if (termData->transactionDate[5] != '/') error = WRONG_DATE;
+		if (termData->transactionDate[6] < '0' || termData->transactionDate[6] > '9') error = WRONG_DATE;
+		if (termData->transactionDate[7] < '0' || termData->transactionDate[7] > '9') error = WRONG_DATE;
+		if (termData->transactionDate[8] < '0' || termData->transactionDate[8] > '9') error = WRONG_DATE;
+		if (termData->transactionDate[9] < '0' || termData->transactionDate[9] > '9') error = WRONG_DATE;
+	}
 	else
-		return WRONG_DATE;
+		error = WRONG_DATE;
+	return error;
 }
 
 EN_terminalError_t isCardExpired(ST_cardData_t* cardData, ST_terminalData_t* termData)
@@ -94,36 +109,83 @@ EN_terminalError_t isValidCardPAN(ST_cardData_t* cardData)
 		return INVALID_CARD;
 }
 
+void printTerminalError(EN_terminalError_t error)
+{
+	switch (error)
+	{
+	case TERMINAL_OK:
+		printf("TERMINAL_OK\n");
+		break;
+	case WRONG_DATE:
+		printf("WRONG_DATE\n");
+		break;
+	case EXPIRED_CARD:
+		printf("EXPIRED_CARD\n");
+		break;
+	case INVALID_CARD:
+		printf("INVALID_CARD\n");
+		break;
+	case INVALID_AMOUNT:
+		printf("INVALID_AMOUNT\n");
+		break;
+	case EXCEED_MAX_AMOUNT:
+		printf("EXCEED_MAX_AMOUNT\n");
+		break;
+	case INVALID_MAX_AMOUNT:
+		printf("INVALID_MAX_AMOUNT\n");
+		break;
+	}
+}
+
 void getTransactionDateTest(void)
 {
 	ST_terminalData_t termData;
+	EN_terminalError_t error;
 	uint8_t result;
 	printf("Tester Name : Mahmoud Ahmed\n");
 	printf("Function Name: getTransactionDate\n");
 
 	printf("\nTest case 1: \n");
 	printf("Input Data : 14/11/2022 \n");
-	result = getTransactionDate(&termData);
-	printf("Expected Result : 0\n"); // TERMINAL_OK
-	printf("Actual Result : %d\n", result);
+	error = getTransactionDate(&termData);
+	printf("Expected Result : TERMINAL_OK\n"); // TERMINAL_OK
+	printf("Actual Result : ");
+	printTerminalError(error);
 
 	printf("\nTest case 2: \n");
 	printf("Input Data : 1/1/2022\n");
-	result = getTransactionDate(&termData);
-	printf("Expected Result : 1\n"); // WRONG_DATE ( because it less than 10 )
-	printf("Actual Result : %d\n", result);
+	error = getTransactionDate(&termData);
+	printf("Expected Result : WRONG_DATE\n"); // WRONG_DATE ( because it less than 10 )
+	printf("Actual Result : ");
+	printTerminalError(error);
 
 	printf("\nTest case 3: \n");
 	printf("Input Data : 2022/14/11\n");
-	result = getTransactionDate(&termData);
-	printf("Expected Result : 1\n"); // WRONG_DATE ( because it is Wrong format )
-	printf("Actual Result : %d\n", result);
+	error = getTransactionDate(&termData);
+	printf("Expected Result : WRONG_DATE\n"); // WRONG_DATE ( because it is Wrong format )
+	printf("Actual Result : ");
+	printTerminalError(error);
 
 	printf("\nTest case 4: \n");
-	printf("Input Data : 04/25/2025\n");
-	result = getTransactionDate(&termData);
-	printf("Expected Result : 1\n"); // WRONG_DATE ( because it is Wrong format )
-	printf("Actual Result : %d\n", result);
+	printf("Input Data : 13/13/2022\n");
+	error = getTransactionDate(&termData);
+	printf("Expected Result : WRONG_DATE\n"); // WRONG_DATE ( because it is Wrong format )
+	printf("Actual Result : ");
+	printTerminalError(error);
+
+	printf("\nTest case 5: \n");
+	printf("Input Data : aa/12/2022\n");
+	error = getTransactionDate(&termData);
+	printf("Expected Result : WRONG_DATE\n"); // WRONG_DATE ( because it is Wrong format )
+	printf("Actual Result : ");
+	printTerminalError(error);
+
+	printf("\nTest case 6: \n");
+	printf("Input Data : 41/12/2022\n");
+	error = getTransactionDate(&termData);
+	printf("Expected Result : WRONG_DATE\n"); // WRONG_DATE ( because it is Wrong format )
+	printf("Actual Result : ");
+	printTerminalError(error);
 }
 
 void isCardExpriedTest(void)

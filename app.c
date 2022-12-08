@@ -2,6 +2,7 @@
 #include <string.h>
 #include "app.h"
 
+
 int main()
 {
 	printf("########################## WELCOME ##########################\n");
@@ -9,6 +10,7 @@ int main()
 	appStart();
 	return 0;
 }
+
 
 void appStart(void)
 {
